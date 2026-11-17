@@ -1,7 +1,8 @@
 // Face pipeline: photo -> aligned, masked 256x256 PNG -> decal on the driver's head (PLAN §5, Lv1).
 // Everything stays in the browser; photos are never uploaded.
 import * as THREE from 'three';
-import { FaceLandmarker, FilesetResolver, type NormalizedLandmark } from '@mediapipe/tasks-vision';
+// MediaPipe is imported dynamically in getLandmarker() so it stays out of the main bundle.
+import type { FaceLandmarker, NormalizedLandmark } from '@mediapipe/tasks-vision';
 import { FACE_TUNING as T } from '../config/faceTuning';
 
 export type FaceSource = HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
@@ -22,8 +23,8 @@ const MOUTH = [13, 14];
 const NOSE_TIP = 1;
 const CHEEK_L = 234;
 const CHEEK_R = 454;
-// Face-oval ring in order, derived from the connection list (each connection's start).
-const OVAL = FaceLandmarker.FACE_LANDMARKS_FACE_OVAL.map((c) => c.start);
+// Face-oval ring in order, derived from the connection list (each connection's start). Filled when MediaPipe loads.
+let OVAL: number[] = [];
 
 let landmarkerPromise: Promise<FaceLandmarker> | null = null;
 
@@ -31,6 +32,8 @@ function getLandmarker(): Promise<FaceLandmarker> {
   if (!landmarkerPromise) {
     const base = import.meta.env.BASE_URL;
     landmarkerPromise = (async () => {
+      const { FaceLandmarker, FilesetResolver } = await import('@mediapipe/tasks-vision');
+      OVAL = FaceLandmarker.FACE_LANDMARKS_FACE_OVAL.map((c) => c.start);
       const fileset = await FilesetResolver.forVisionTasks(`${base}mediapipe`);
       const make = (delegate: 'GPU' | 'CPU') =>
         FaceLandmarker.createFromOptions(fileset, {

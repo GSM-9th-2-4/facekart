@@ -25,10 +25,10 @@ Owner legend: CC = Claude Code · App = Claude app (browser) · Me = human.
 - [x] **6. Face pipeline** (CC → `face-pipeline`)
   - Done when: `@mediapipe/tasks-vision` installed; model file fetched by `npm run fetch-models` into `public/models/`; a photo (file or webcam) produces an aligned, masked 256×256 face PNG; it is applied as a decal on a big round head on the kart driver; failure (no face / side face) returns a clear error message.
 
-- [ ] **7. Screens** (CC → `ui-screens`)
+- [x] **7. Screens** (CC → `ui-screens`)
   - Done when: Title → Lobby → (Garage, Face registration) → Track select → Loading → Race HUD → Results → Retry / Lobby all work by keyboard and mouse; settings screen remaps keys; selections, faces and records persist in localStorage.
 
-- [ ] **8. AI + race flow** (CC → `race-ai`)
+- [x] **8. AI + race flow** (CC → `race-ai`)
   - Done when: 3-2-1 countdown; up to 7 AI karts follow the racing line with stats from `karts.json` and use boosters; lap counting via checkpoints (no shortcut cheating), live positions, lap times, best-time records per track; 1st-place face close-up on Results; AI karts can wear saved faces.
 
 - [ ] **9. Polish** (CC)
@@ -50,3 +50,5 @@ Record any choice made without asking (one line each).
 - 2026-11-17 step 6: Face decal centered on face outline vertically (not eyes–mouth) so chin/forehead are not cut; cartoon tone on by default.
 - 2026-11-17 step 5: Wall hit = slide along wall, speed loss scaled by impact²; dead head-on hit stops the kart (no bounce).
 - 2026-11-17 step 4: ?track=<id> works in /track-preview.html now; main game wiring lands with step 8. AI drives main line only (forks optional for player). City shortcut skips ~370 m by design.
+- 2026-11-17 step 7: Storage prefix facekart:v1:; UI owns the pause key; Item mode greyed out (stretch); Time attack forces 0 AI; max 8 saved faces.
+- 2026-11-17 step 8: Player starts mid-grid; AI pace (paceMin) + ±5% rubber band; total-time record only saved at the track's default lap count; Results winner close-up is the 2D face image (no 3D camera). Sim showed top-speed stat dominates AI order — revisit with statStepPct / aiTuning after test drives.
