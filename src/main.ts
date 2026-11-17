@@ -1,6 +1,7 @@
 import * as THREE from 'three';
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { createKart } from './kart/KartModel';
+import { createKart, KART_DESIGNS, type KartDesign } from './kart/KartModel';
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(devicePixelRatio);
@@ -12,6 +13,9 @@ document.body.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x8fc8ff);
+// env map so chrome / clearcoat paint have something to reflect
+scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
+scene.environmentIntensity = 0.6;
 scene.fog = new THREE.Fog(0x8fc8ff, 30, 120);
 const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.1, 500);
 camera.position.set(3.2, 2.2, 3.6);
@@ -33,13 +37,22 @@ ground.rotation.x = -Math.PI / 2;
 ground.receiveShadow = true;
 scene.add(ground);
 
-const kart = createKart(0xe8322b);
+// dev: ?design=bubble picks the starting design
+let di = Math.max(0, KART_DESIGNS.indexOf(new URLSearchParams(location.search).get('design') as KartDesign));
+let kart = createKart(0xe8322b, KART_DESIGNS[di]);
 scene.add(kart.root);
 
-// Preview: C cycles color; wheels roll and steer so the rig is visibly working.
+// Preview: C cycles color, V cycles design; wheels roll and steer so the rig is visibly working.
 const colors = [0xe8322b, 0x2b7be8, 0xf5c518, 0x2fbf5a, 0x9b3be8, 0xf2f2f2];
 let ci = 0;
-addEventListener('keydown', (e) => { if (e.code === 'KeyC') kart.setColor(colors[++ci % colors.length]); });
+addEventListener('keydown', (e) => {
+  if (e.code === 'KeyC') kart.setColor(colors[++ci % colors.length]);
+  if (e.code === 'KeyV') {
+    scene.remove(kart.root);
+    kart = createKart(colors[ci % colors.length], KART_DESIGNS[++di % KART_DESIGNS.length]);
+    scene.add(kart.root);
+  }
+});
 addEventListener('resize', () => {
   camera.aspect = innerWidth / innerHeight;
   camera.updateProjectionMatrix();

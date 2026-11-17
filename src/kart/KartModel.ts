@@ -61,7 +61,10 @@ function wheel(r: number, w: number, tire: THREE.Material, rim: THREE.Material, 
   return g;
 }
 
-export function createKart(color = 0xe8322b): KartParts {
+export type KartDesign = 'racer' | 'bubble';
+export const KART_DESIGNS: KartDesign[] = ['racer', 'bubble'];
+
+export function createKart(color = 0xe8322b, design: KartDesign = 'racer'): KartParts {
   const root = new THREE.Group();
   const body = new THREE.Group();
   root.add(body);
@@ -81,46 +84,116 @@ export function createKart(color = 0xe8322b): KartParts {
   };
   setColor(color);
 
-  // ---------- chassis
-  add(body, rbox(1.05, 0.08, 1.75, 0.03), carbon, 0, 0.17, -0.02);           // floor tray
-  add(body, rbox(0.98, 0.3, 1.2, 0.13), paint, 0, 0.34, -0.12);              // main tub
-  const nose = add(body, rbox(0.86, 0.2, 0.62, 0.1), paint, 0, 0.32, 0.56); // sloped nose
-  nose.rotation.x = 0.16;
-  add(body, rbox(0.4, 0.06, 0.5, 0.03), white, 0, 0.43, 0.5).rotation.x = 0.16; // nose stripe
-  add(body, rbox(0.7, 0.06, 0.72, 0.03), black, 0, 0.49, -0.3);             // cockpit opening
-  // cockpit rim / cowl in front of driver
-  const cowl = add(body, rbox(0.78, 0.14, 0.26, 0.07), paint, 0, 0.5, 0.15);
-  cowl.rotation.x = -0.25;
-  // windshield
-  const glass = new THREE.MeshPhysicalMaterial({ color: 0x9fd8ff, transmission: 0.6, roughness: 0.05, transparent: true, opacity: 0.55 });
-  const shield = add(body, rbox(0.6, 0.16, 0.02, 0.01), glass, 0, 0.64, 0.17);
-  shield.rotation.x = -0.45;
+  const exhausts: THREE.Object3D[] = [];
+  if (design === 'racer') {
+    // ---------- chassis
+    add(body, rbox(1.05, 0.08, 1.75, 0.03), carbon, 0, 0.17, -0.02);           // floor tray
+    add(body, rbox(0.98, 0.3, 1.2, 0.13), paint, 0, 0.34, -0.12);              // main tub
+    const nose = add(body, rbox(0.86, 0.2, 0.62, 0.1), paint, 0, 0.32, 0.56); // sloped nose
+    nose.rotation.x = 0.16;
+    add(body, rbox(0.4, 0.06, 0.5, 0.03), white, 0, 0.43, 0.5).rotation.x = 0.16; // nose stripe
+    add(body, rbox(0.7, 0.06, 0.72, 0.03), black, 0, 0.49, -0.3);             // cockpit opening
+    // cockpit rim / cowl in front of driver
+    const cowl = add(body, rbox(0.78, 0.14, 0.26, 0.07), paint, 0, 0.5, 0.15);
+    cowl.rotation.x = -0.25;
+    // windshield
+    const glass = new THREE.MeshPhysicalMaterial({ color: 0x9fd8ff, transmission: 0.6, roughness: 0.05, transparent: true, opacity: 0.55 });
+    const shield = add(body, rbox(0.6, 0.16, 0.02, 0.01), glass, 0, 0.64, 0.17);
+    shield.rotation.x = -0.45;
 
-  // ---------- front bumper: chunky wraparound, paint + chrome lip
-  add(body, rbox(1.42, 0.16, 0.2, 0.08), paintDark, 0, 0.22, 0.98);
-  add(body, rbox(1.3, 0.04, 0.22, 0.02), chrome, 0, 0.31, 0.98);
-  for (const sx of [-1, 1]) {
-    const arm = add(body, rbox(0.12, 0.1, 0.34, 0.05), carbon, sx * 0.5, 0.22, 0.8);
-    arm.rotation.y = sx * 0.3;
-    // headlights in the nose
-    const lens = add(body, new THREE.SphereGeometry(0.07, 18, 12),
-      new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xfff2b0, emissiveIntensity: 1.5 }), sx * 0.27, 0.36, 0.86);
-    lens.scale.z = 0.45;
-    add(body, new THREE.TorusGeometry(0.07, 0.014, 8, 20), chrome, sx * 0.27, 0.36, 0.87);
-  }
-  // number badge
-  const badge = add(body, new THREE.CircleGeometry(0.09, 28), white, 0, 0.42, 0.85);
-  badge.rotation.x = -0.6;
+    // ---------- front bumper: chunky wraparound, paint + chrome lip
+    add(body, rbox(1.42, 0.16, 0.2, 0.08), paintDark, 0, 0.22, 0.98);
+    add(body, rbox(1.3, 0.04, 0.22, 0.02), chrome, 0, 0.31, 0.98);
+    for (const sx of [-1, 1]) {
+      const arm = add(body, rbox(0.12, 0.1, 0.34, 0.05), carbon, sx * 0.5, 0.22, 0.8);
+      arm.rotation.y = sx * 0.3;
+      // headlights in the nose
+      const lens = add(body, new THREE.SphereGeometry(0.07, 18, 12),
+        new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xfff2b0, emissiveIntensity: 1.5 }), sx * 0.27, 0.36, 0.86);
+      lens.scale.z = 0.45;
+      add(body, new THREE.TorusGeometry(0.07, 0.014, 8, 20), chrome, sx * 0.27, 0.36, 0.87);
+    }
+    // number badge
+    const badge = add(body, new THREE.CircleGeometry(0.09, 28), white, 0, 0.42, 0.85);
+    badge.rotation.x = -0.6;
 
-  // ---------- side pods + fenders covering the fat tires
-  for (const sx of [-1, 1]) {
-    add(body, rbox(0.3, 0.24, 0.85, 0.11), paint, sx * 0.6, 0.31, -0.08);    // side pod
-    add(body, rbox(0.06, 0.08, 0.7, 0.03), white, sx * 0.755, 0.34, -0.08);  // stripe
-    add(body, rbox(0.04, 0.12, 0.22, 0.03), black, sx * 0.76, 0.3, 0.24);    // intake
-    // solid rounded fenders shrouding the tops of the tires
-    add(body, rbox(0.42, 0.1, 0.66, 0.05), paint, sx * 0.74, 0.64, -0.66);
-    add(body, rbox(0.44, 0.03, 0.08, 0.015), white, sx * 0.74, 0.69, -0.4);
-    add(body, rbox(0.3, 0.08, 0.5, 0.04), paint, sx * 0.68, 0.52, 0.62);
+    // ---------- side pods + fenders covering the fat tires
+    for (const sx of [-1, 1]) {
+      add(body, rbox(0.3, 0.24, 0.85, 0.11), paint, sx * 0.6, 0.31, -0.08);    // side pod
+      add(body, rbox(0.06, 0.08, 0.7, 0.03), white, sx * 0.755, 0.34, -0.08);  // stripe
+      add(body, rbox(0.04, 0.12, 0.22, 0.03), black, sx * 0.76, 0.3, 0.24);    // intake
+      // solid rounded fenders shrouding the tops of the tires
+      add(body, rbox(0.42, 0.1, 0.66, 0.05), paint, sx * 0.74, 0.63, -0.66);
+      add(body, rbox(0.12, 0.2, 0.3, 0.04), carbon, sx * 0.6, 0.52, -0.66);   // fender stay into the pod
+      add(body, rbox(0.44, 0.03, 0.08, 0.015), white, sx * 0.74, 0.69, -0.4);
+      add(body, rbox(0.3, 0.08, 0.5, 0.04), paint, sx * 0.68, 0.51, 0.62);
+      add(body, rbox(0.3, 0.05, 0.08, 0.02), carbon, sx * 0.5, 0.48, 0.62);  // fender stay into the nose
+    }
+    // ---------- engine, exhausts, wing
+    add(body, rbox(0.56, 0.26, 0.3, 0.06), carbon, 0, 0.4, -0.86);
+    for (let i = 0; i < 4; i++) add(body, rbox(0.5, 0.02, 0.03, 0.008), chrome, 0, 0.54, -0.96 + i * 0.07);
+    for (const sx of [-1, 1]) {
+      const pipe = add(body, new THREE.CylinderGeometry(0.055, 0.045, 0.34, 16), chrome, sx * 0.18, 0.44, -1.05);
+      pipe.rotation.x = Math.PI / 2 - 0.3;
+      const mouth = add(body, new THREE.TorusGeometry(0.055, 0.012, 8, 18), chrome, sx * 0.18, 0.39, -1.21);
+      mouth.rotation.x = -0.3;
+      add(body, new THREE.CircleGeometry(0.048, 16), black, sx * 0.18, 0.39, -1.205).rotation.y = Math.PI;
+      const tip = new THREE.Object3D();
+      tip.position.set(sx * 0.18, 0.38, -1.24);
+      body.add(tip);
+      exhausts.push(tip);
+    }
+    for (const sx of [-1, 1]) {
+      const strut = add(body, rbox(0.05, 0.36, 0.1, 0.02), carbon, sx * 0.32, 0.66, -0.98);
+      strut.rotation.x = -0.25;
+    }
+    const wing = add(body, rbox(1.3, 0.05, 0.3, 0.025), paint, 0, 0.86, -1.05);
+    wing.rotation.x = 0.12;
+    add(body, rbox(1.2, 0.02, 0.06, 0.01), white, 0, 0.885, -0.92);
+  } else {
+    // ---------- egg-shaped bubble body
+    const shell = add(body, new THREE.SphereGeometry(0.6, 40, 28), paint, 0, 0.42, -0.05);
+    shell.scale.set(0.9, 0.42, 1.3);
+    add(body, rbox(1.0, 0.1, 1.5, 0.05), carbon, 0, 0.2, -0.05);              // skirt
+    const belt = add(body, new THREE.TorusGeometry(0.6, 0.025, 8, 48), white, 0, 0.4, -0.05);
+    belt.rotation.x = Math.PI / 2;
+    belt.scale.set(0.91, 1.31, 1);
+    const pit = add(body, new THREE.CylinderGeometry(0.34, 0.34, 0.05, 32), black, 0, 0.63, -0.3);
+    pit.scale.z = 1.25;
+    add(body, new THREE.TorusGeometry(0.34, 0.03, 8, 40), chrome, 0, 0.655, -0.3).rotation.x = Math.PI / 2;
+    // big frog-eye headlights on the hood
+    for (const sx of [-1, 1]) {
+      add(body, new THREE.SphereGeometry(0.11, 20, 14), paint, sx * 0.24, 0.56, 0.42);
+      const lens = add(body, new THREE.SphereGeometry(0.085, 20, 14),
+        new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xfff2b0, emissiveIntensity: 1.5 }), sx * 0.24, 0.58, 0.48);
+      lens.scale.z = 0.5;
+      add(body, new THREE.TorusGeometry(0.088, 0.016, 8, 24), chrome, sx * 0.24, 0.58, 0.5);
+      // round taillights
+      const tl = add(body, new THREE.SphereGeometry(0.06, 14, 10),
+        new THREE.MeshStandardMaterial({ color: 0xff3030, emissive: 0xff2020, emissiveIntensity: 1 }), sx * 0.3, 0.45, -0.8);
+      tl.scale.z = 0.4;
+      // round fenders hugging every wheel
+      for (const [z, r] of [[0.6, 0.3], [-0.62, 0.34]] as const) {
+        const f = add(body, new THREE.SphereGeometry(r * 1.1, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), paint, sx * 0.7, r * 1.6, z);
+        f.scale.set(0.62, 0.55, 1);
+        (f.material as THREE.Material).side = THREE.DoubleSide;
+      }
+    }
+    // chrome grille
+    add(body, rbox(0.6, 0.16, 0.06, 0.04), chrome, 0, 0.34, 0.8);
+    for (let i = -2; i <= 2; i++) add(body, rbox(0.02, 0.1, 0.03, 0.005), black, i * 0.1, 0.34, 0.835);
+    add(body, rbox(1.3, 0.1, 0.14, 0.05), chrome, 0, 0.22, 0.88);              // bumper bar
+    // ducktail spoiler + single big center exhaust
+    const duck = add(body, rbox(0.8, 0.05, 0.2, 0.025), paint, 0, 0.62, -0.82);
+    duck.rotation.x = -0.3;
+    const pipe = add(body, new THREE.CylinderGeometry(0.08, 0.065, 0.3, 18), chrome, 0, 0.36, -0.88);
+    pipe.rotation.x = Math.PI / 2 - 0.35;
+    const mouth = add(body, new THREE.TorusGeometry(0.08, 0.016, 8, 20), chrome, 0, 0.31, -1.02);
+    mouth.rotation.x = -0.35;
+    const tip = new THREE.Object3D();
+    tip.position.set(0, 0.3, -1.05);
+    body.add(tip);
+    exhausts.push(tip);
   }
 
   // ---------- seat, steering
@@ -139,29 +212,6 @@ export function createKart(color = 0xe8322b): KartParts {
   steeringWheel.add(new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.03, 12).rotateX(Math.PI / 2), paint));
   body.add(steeringWheel);
 
-  // ---------- engine, exhausts, wing
-  add(body, rbox(0.56, 0.26, 0.3, 0.06), carbon, 0, 0.4, -0.86);
-  for (let i = 0; i < 4; i++) add(body, rbox(0.5, 0.02, 0.03, 0.008), chrome, 0, 0.54, -0.96 + i * 0.07);
-  const exhausts: THREE.Object3D[] = [];
-  for (const sx of [-1, 1]) {
-    const pipe = add(body, new THREE.CylinderGeometry(0.055, 0.045, 0.34, 16), chrome, sx * 0.18, 0.44, -1.05);
-    pipe.rotation.x = Math.PI / 2 - 0.3;
-    const mouth = add(body, new THREE.TorusGeometry(0.055, 0.012, 8, 18), chrome, sx * 0.18, 0.39, -1.21);
-    mouth.rotation.x = -0.3;
-    add(body, new THREE.CircleGeometry(0.048, 16), black, sx * 0.18, 0.39, -1.205).rotation.y = Math.PI;
-    const tip = new THREE.Object3D();
-    tip.position.set(sx * 0.18, 0.38, -1.24);
-    body.add(tip);
-    exhausts.push(tip);
-  }
-  for (const sx of [-1, 1]) {
-    const strut = add(body, rbox(0.05, 0.36, 0.1, 0.02), carbon, sx * 0.32, 0.66, -0.98);
-    strut.rotation.x = -0.25;
-  }
-  const wing = add(body, rbox(1.3, 0.05, 0.3, 0.025), paint, 0, 0.86, -1.05);
-  wing.rotation.x = 0.12;
-  add(body, rbox(1.2, 0.02, 0.06, 0.01), white, 0, 0.885, -0.92);
-  for (const sx of [-1, 1]) add(body, rbox(0.04, 0.22, 0.4, 0.02), paintDark, sx * 0.66, 0.86, -1.06);
 
   // ---------- driver: chibi proportions (big head, small body)
   const suit = std(0x2f6fd8, 0.6);
@@ -217,12 +267,16 @@ export function createKart(color = 0xe8322b): KartParts {
     wheelSpins.push(spin);
     if (steer) frontWheels.push(pivot);
   };
-  addWheel(-0.68, 0.62, 0.24, 0.24, true);
-  addWheel(0.68, 0.62, 0.24, 0.24, true);
-  addWheel(-0.74, -0.66, 0.3, 0.36, false);
-  addWheel(0.74, -0.66, 0.3, 0.36, false);
-  add(root, new THREE.CylinderGeometry(0.03, 0.03, 1.4, 8), carbon, 0, 0.3, -0.66).rotation.z = Math.PI / 2;
-  add(root, new THREE.CylinderGeometry(0.025, 0.025, 1.3, 8), carbon, 0, 0.24, 0.62).rotation.z = Math.PI / 2;
+  // [front x, front z, front r, front w, rear x, rear z, rear r, rear w]
+  const [fx, fz, fr, fw, rx, rz, rr, rw] = design === 'racer'
+    ? [0.68, 0.62, 0.24, 0.24, 0.74, -0.66, 0.3, 0.36]
+    : [0.7, 0.6, 0.26, 0.26, 0.7, -0.62, 0.29, 0.3];
+  for (const sx of [-1, 1]) {
+    addWheel(sx * fx, fz, fr, fw, true);
+    addWheel(sx * rx, rz, rr, rw, false);
+  }
+  add(root, new THREE.CylinderGeometry(0.03, 0.03, 1.4, 8), carbon, 0, rr, rz).rotation.z = Math.PI / 2;
+  add(root, new THREE.CylinderGeometry(0.025, 0.025, 1.3, 8), carbon, 0, fr, fz).rotation.z = Math.PI / 2;
 
   return { root, body, frontWheels, wheelSpins, steeringWheel, head, placeholderFace, exhausts, setColor };
 }
