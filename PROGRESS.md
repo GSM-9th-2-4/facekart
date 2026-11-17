@@ -16,7 +16,7 @@ Owner legend: CC = Claude Code · App = Claude app (browser) · Me = human.
 - [x] **3. Kart controls** (CC → `kart-physics`)
   - Done when: ↑↓ accelerate / reverse, ←→ steer, Shift+arrow drift with visible slide, booster gauge fills while drifting, full gauge = 1 booster (max 2), Ctrl fires a booster (speed burst + simple flame effect), instant boost works when ↑ is pressed right after a drift ends, chase camera follows smoothly; all numbers in `tuning.ts`; debug overlay (toggle with F1) shows speed, slip angle, gauge, booster count.
 
-- [ ] **4. Track generator + 8 tracks** (CC → `track-builder`)
+- [x] **4. Track generator + 8 tracks** (CC → `track-builder`)
   - Done when: tracks load from `src/data/tracks/*.json` (waypoints + width + theme); road, walls and checkpoints are generated from a closed spline; all 8 tracks from `PLAN.md` §4.2 exist with their features (ice = low grip, puddles = slow zones, ramps, forks, moving floors); start grid positions defined; a dev URL param `?track=<id>` loads a track directly.
 
 - [x] **5. 10 karts** (CC → `kart-physics`)
@@ -49,3 +49,4 @@ Record any choice made without asking (one line each).
 - 2026-11-17: Steps 4, 6, 7 built in parallel with step 3 at the user's request (separate folders); karts.json written from PLAN §4.1 up front so the Garage could use it.
 - 2026-11-17 step 6: Face decal centered on face outline vertically (not eyes–mouth) so chin/forehead are not cut; cartoon tone on by default.
 - 2026-11-17 step 5: Wall hit = slide along wall, speed loss scaled by impact²; dead head-on hit stops the kart (no bounce).
+- 2026-11-17 step 4: ?track=<id> works in /track-preview.html now; main game wiring lands with step 8. AI drives main line only (forks optional for player). City shortcut skips ~370 m by design.
