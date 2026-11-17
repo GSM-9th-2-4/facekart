@@ -20,6 +20,16 @@ export const AUDIO_TUNING = {
     topHz: 165, // pitch at speedNorm 1 (keeps rising above 1 while boosting)
     filterHz: 900, // lowpass cutoff on the engine
     smoothing: 0.08, // setTargetAtTime time constant (s)
+    // Recorded loops (public/assets/sfx/<name>.wav). hz = pitch the loop was recorded at;
+    // the loop is resampled to the current engine pitch and crossfaded with its neighbours.
+    sampleGain: 1.6, // recorded loops are normalised quieter than the synth, so boost them
+    sampleIdleHz: 80, // engine pitch at standstill when using recorded loops
+    sampleTopHz: 520, // pitch at speedNorm 1
+    layers: [
+      { name: 'engineLow', hz: 79 },
+      { name: 'engineMid', hz: 188 },
+      { name: 'engineHigh', hz: 560 },
+    ],
   },
   drift: {
     gain: 0.18, // at intensity 1

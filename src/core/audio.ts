@@ -25,7 +25,8 @@ let ctx: Ctx | null = null;
 let master: GainNode | null = null;
 let noise: AudioBuffer | null = null;
 let volume: number = T.master;
-const samples = new Map<SfxName, AudioBuffer>();
+const samples = new Map<string, AudioBuffer>();
+const LAYERS = T.engine.layers;
 
 function getCtx(): Ctx | null {
   if (ctx) return ctx;
@@ -49,7 +50,7 @@ function getCtx(): Ctx | null {
 async function loadSamples(c: Ctx) {
   const base = import.meta.env.BASE_URL ?? '/';
   await Promise.all(
-    SFX_NAMES.map(async (name) => {
+    [...SFX_NAMES, ...LAYERS.map((l) => l.name)].map(async (name) => {
       for (const ext of EXTS) {
         try {
           const res = await fetch(`${base}assets/sfx/${name}.${ext}`);
@@ -127,6 +128,8 @@ const RECIPES: Record<SfxName, (c: Ctx, out: AudioNode, t: number, v: number) =>
 // --- looping voices ---
 class Engine {
   private osc: OscillatorNode[] = [];
+  // Recorded layers (used when every engine loop file loaded); otherwise the synth oscillators.
+  private loops: { src: AudioBufferSourceNode; gain: GainNode; hz: number }[] = [];
   private wanted = false;
   private gain: GainNode | null = null;
 
@@ -137,6 +140,20 @@ class Engine {
     try {
       this.gain = c.createGain();
       this.gain.gain.value = 0;
+      if (LAYERS.every((l) => samples.has(l.name))) {
+        this.gain.connect(master);
+        for (const l of LAYERS) {
+          const src = c.createBufferSource();
+          const gain = c.createGain();
+          src.buffer = samples.get(l.name)!;
+          src.loop = true;
+          gain.gain.value = 0;
+          src.connect(gain).connect(this.gain);
+          src.start(c.currentTime, Math.random() * src.buffer.duration); // random phase so restarts don't sound identical
+          this.loops.push({ src, gain, hz: l.hz });
+        }
+        return;
+      }
       const lp = c.createBiquadFilter();
       lp.type = 'lowpass';
       lp.frequency.value = T.engine.filterHz;
@@ -159,9 +176,24 @@ class Engine {
     if (this.wanted && !this.gain) this.start();
     if (!ctx || !this.gain) return;
     const s = Math.max(0, Math.min(1.5, speedNorm));
-    const hz = T.engine.idleHz + (T.engine.topHz - T.engine.idleHz) * s;
     const g = T.engine.idleGain + (T.engine.gain - T.engine.idleGain) * Math.min(1, s) + T.engine.throttleGain * Math.max(0, throttle);
     const t = ctx.currentTime;
+    if (this.loops.length) {
+      const hz = T.engine.sampleIdleHz + (T.engine.sampleTopHz - T.engine.sampleIdleHz) * s;
+      // Crossfade between the two layers whose recorded pitch brackets hz (in log-pitch space).
+      const lh = Math.log(hz);
+      this.loops.forEach((l, i) => {
+        const lo = i > 0 ? Math.log(this.loops[i - 1].hz) : -Infinity;
+        const hi = i < this.loops.length - 1 ? Math.log(this.loops[i + 1].hz) : Infinity;
+        const me = Math.log(l.hz);
+        const w = lh <= me ? (lh <= lo ? 0 : isFinite(lo) ? (lh - lo) / (me - lo) : 1) : lh >= hi ? 0 : isFinite(hi) ? (hi - lh) / (hi - me) : 1;
+        l.gain.gain.setTargetAtTime(Math.sqrt(w), t, T.engine.smoothing); // equal-power
+        l.src.playbackRate.setTargetAtTime(hz / l.hz, t, T.engine.smoothing);
+      });
+      this.gain.gain.setTargetAtTime(g * T.engine.sampleGain, t, T.engine.smoothing);
+      return;
+    }
+    const hz = T.engine.idleHz + (T.engine.topHz - T.engine.idleHz) * s;
     this.osc.forEach((o, i) => o.frequency.setTargetAtTime(hz * (i === 0 ? 1 : 0.5), t, T.engine.smoothing));
     this.gain.gain.setTargetAtTime(g, t, T.engine.smoothing);
   }
@@ -177,6 +209,16 @@ class Engine {
       }
     }
     this.osc = [];
+    for (const l of this.loops) {
+      try {
+        l.src.stop();
+      } catch {
+        /* already stopped */
+      }
+      l.src.disconnect();
+      l.gain.disconnect();
+    }
+    this.loops = [];
     this.gain?.disconnect();
     this.gain = null;
   }
