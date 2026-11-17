@@ -9,7 +9,8 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "fetch-models": "node scripts/fetch-models.mjs"
   },
   "repository": {
     "type": "git",
@@ -24,6 +25,7 @@
   },
   "homepage": "https://github.com/GSM-9th-2-4/facekart#readme",
   "dependencies": {
+    "@mediapipe/tasks-vision": "^1.2.3",
     "three": "^0.187.0"
   },
   "devDependencies": {

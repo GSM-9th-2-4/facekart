@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>FaceKart — face pipeline test</title>
+    <style>
+      body { font-family: system-ui, sans-serif; background: #223; color: #eee; margin: 16px; }
+      .row { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start; margin-top: 12px; }
+      .box { background: #334; padding: 8px; border-radius: 8px; }
+      #out { width: 256px; height: 256px; background: repeating-conic-gradient(#555 0 25%, #777 0 50%) 0 0/16px 16px; }
+      #cam { width: 320px; display: none; }
+      #err { color: #ff8a8a; min-height: 1.2em; }
+    </style>
+  </head>
+  <body>
+    <h2>Face pipeline test (all local, nothing uploaded)</h2>
+    <input type="file" id="file" accept="image/*" />
+    <button id="camBtn">Start webcam</button>
+    <button id="snapBtn" disabled>Capture</button>
+    <label><input type="checkbox" id="cartoon" checked /> cartoon tone</label>
+    <button id="defBtn">Default face</button>
+    <button id="clearBtn">Remove face</button>
+    <p id="err"></p>
+    <div class="row">
+      <div class="box"><video id="cam"></video></div>
+      <div class="box"><div>256 PNG</div><img id="out" alt="" /></div>
+      <div class="box"><div>Head</div><div id="view"></div></div>
+    </div>
+    <script type="module" src="/src/face/test.ts"></script>
+  </body>
+</html>
