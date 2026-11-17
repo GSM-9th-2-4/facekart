@@ -13,7 +13,7 @@ Owner legend: CC = Claude Code · App = Claude app (browser) · Me = human.
 - [ ] **2. Free assets** (App — runs in parallel, not blocking)
   - Done when: the human has downloaded assets into `public/assets/` (or says to skip). Prompt: `docs/WEB_TASKS.md` → Task A.
 
-- [ ] **3. Kart controls** (CC → `kart-physics`)
+- [x] **3. Kart controls** (CC → `kart-physics`)
   - Done when: ↑↓ accelerate / reverse, ←→ steer, Shift+arrow drift with visible slide, booster gauge fills while drifting, full gauge = 1 booster (max 2), Ctrl fires a booster (speed burst + simple flame effect), instant boost works when ↑ is pressed right after a drift ends, chase camera follows smoothly; all numbers in `tuning.ts`; debug overlay (toggle with F1) shows speed, slip angle, gauge, booster count.
 
 - [ ] **4. Track generator + 8 tracks** (CC → `track-builder`)
@@ -45,3 +45,5 @@ Owner legend: CC = Claude Code · App = Claude app (browser) · Me = human.
 ## Decisions log
 
 Record any choice made without asking (one line each).
+- 2026-11-17 step 3: Boost also bound to Z by default because macOS uses Ctrl+arrows for Spaces / Mission Control.
+- 2026-11-17: Steps 4, 6, 7 built in parallel with step 3 at the user's request (separate folders); karts.json written from PLAN §4.1 up front so the Garage could use it.
