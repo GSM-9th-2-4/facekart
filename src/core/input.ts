@@ -18,13 +18,17 @@ const pressed = new Set<string>();
 
 const isBound = (code: string) => Object.values(bindings).some((codes) => codes.includes(code));
 
+const isTyping = (e: KeyboardEvent) => e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement;
+
 function onKeyDown(e: KeyboardEvent) {
+  if (isTyping(e)) return;
   if (!isBound(e.code)) return;
   e.preventDefault();
   if (!e.repeat && !down.has(e.code)) pressed.add(e.code);
   down.add(e.code);
 }
 function onKeyUp(e: KeyboardEvent) {
+  if (isTyping(e)) { down.delete(e.code); return; }
   if (!isBound(e.code)) return;
   e.preventDefault();
   down.delete(e.code);
