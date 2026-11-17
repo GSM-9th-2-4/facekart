@@ -81,6 +81,9 @@ export const TUNING = {
   visual: {
     wheelSpinScale: 2.5, // wheel rotation per metre (≈ 1 / wheel radius)
     steerWheelAngle: 0.4, // rad; front wheel visual steer angle
+    driftRoll: 0.12, // rad; kart body roll into a drift
+    driverLean: 0.06, // rad; extra driver lean during a drift
+    rollDamp: 8, // 1/s; how fast body roll follows
     flameFlickerHz: 30,
     flameFlickerMin: 0.8, // flame length scale = min + amp * |sin(t * Hz)|
     flameFlickerAmp: 0.4,

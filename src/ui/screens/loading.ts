@@ -16,7 +16,7 @@ export function loadingScreen(_ctx: UiCtx, params: { trackName: string }) {
   const el = screen(
     'fk-loading',
     h('div', { class: 'fk-panel' },
-      h('p', { class: 'fk-kicker' }, 'Loading track'),
+      h('p', { class: 'fk-kicker' }, 'Engines on · Loading track'),
       h('h1', { class: 'fk-track-name' }, params.trackName),
       h('div', { class: 'fk-progress' }, bar),
       h('p', { class: 'fk-tip' }, h('b', {}, 'TIP '), TIPS[Math.floor(Math.random() * TIPS.length)]),

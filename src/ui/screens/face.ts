@@ -7,7 +7,7 @@ export function faceScreen(ctx: UiCtx) {
   let stopCam: (() => void) | null = null;
   let destroyed = false;
 
-  const status = h('p', { class: 'fk-note', role: 'status' });
+  const status = h('p', { class: 'fk-note fk-face-status', role: 'status', 'aria-live': 'polite' });
   const setStatus = (msg: string, error = false) => {
     status.textContent = msg;
     status.classList.toggle('fk-error', error);

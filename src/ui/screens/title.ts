@@ -6,6 +6,7 @@ export function titleScreen(ctx: UiCtx) {
     'fk-title',
     h('h1', { class: 'fk-logo' }, 'Face', h('span', {}, 'Kart')),
     h('p', { class: 'fk-tagline' }, 'Race with your own face!'),
+    h('p', { class: 'fk-title-prompt' }, 'PICK A KART. MAKE A FACE. TAKE THE CUP.'),
     h(
       'div',
       { class: 'fk-menu' },

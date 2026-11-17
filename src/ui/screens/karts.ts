@@ -7,6 +7,6 @@ export const KARTS: KartDef[] = karts;
 
 export function selectedKart(): KartDef {
   const id = storage.getSelectedKartId();
-  return KARTS.find((k) => k.id === id) ?? KARTS[0];
+  return KARTS.find((k) => k.id === id) ?? KARTS.find((k) => k.id === 'practice') ?? KARTS[0]; // same default as the game (DEFAULT_KART_ID)
 }
 export const kartColor = (k: KartDef) => storage.getKartColors()[k.id] ?? k.color;
