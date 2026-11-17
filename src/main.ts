@@ -2,10 +2,9 @@ import * as THREE from 'three';
 import { TUNING } from './config/tuning';
 import * as input from './core/input';
 import { startLoop } from './core/loop';
-import { KartController, makeKartParams, type KartControls } from './kart/KartController';
-import { KartVisual } from './kart/KartVisual';
-import { ChaseCamera } from './kart/ChaseCamera';
-import { DebugOverlay } from './kart/DebugOverlay';
+import { KartController, KartVisual, ChaseCamera, DebugOverlay, getKart, makeKartParams, DEFAULT_KART_ID, type KartControls } from './kart';
+import { applyFaceToHead, makeDefaultHeadTexture } from './face';
+import { storage } from './core/storage';
 
 const container = document.getElementById('app')!;
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -48,9 +47,18 @@ for (let i = 0; i < markerCount; i++) {
 markers.castShadow = true;
 scene.add(markers);
 
-const kart = new KartController(makeKartParams());
-const visual = new KartVisual(0xe53935);
+// Dev: ?kart=<id> picks a kart from karts.json (unknown → Practice Kart).
+const kartId = new URLSearchParams(location.search).get('kart') ?? DEFAULT_KART_ID;
+let kartDef = getKart(kartId);
+if (!kartDef) {
+  console.warn(`Unknown kart "${kartId}", using ${DEFAULT_KART_ID}`);
+  kartDef = getKart(DEFAULT_KART_ID)!;
+}
+const kart = new KartController(makeKartParams(kartDef));
+const visual = new KartVisual(kartDef.color);
 scene.add(visual.group);
+// Driver face: selected saved face, else the plain cartoon face. Dispose with applyFaceToHead(head, null) before visual.dispose().
+applyFaceToHead(visual.head, storage.getSelectedFace()?.dataUrl ?? makeDefaultHeadTexture());
 const chase = new ChaseCamera(camera, kart);
 const debug = new DebugOverlay(document.getElementById('ui')!);
 

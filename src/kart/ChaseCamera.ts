@@ -9,6 +9,7 @@ export class ChaseCamera {
   private yaw: number;
   private pos = new THREE.Vector3();
   private look = new THREE.Vector3();
+  private target = new THREE.Vector3();
 
   constructor(private camera: THREE.PerspectiveCamera, k: KartController) {
     this.yaw = k.heading;
@@ -31,7 +32,7 @@ export class ChaseCamera {
     const c = TUNING.camera;
     const fx = Math.sin(this.yaw);
     const fz = Math.cos(this.yaw);
-    this.pos.lerp(new THREE.Vector3(k.x - fx * c.distance, c.height, k.z - fz * c.distance), t);
+    this.pos.lerp(this.target.set(k.x - fx * c.distance, c.height, k.z - fz * c.distance), t);
     this.look.set(k.x + fx * c.lookAhead, c.lookHeight, k.z + fz * c.lookAhead);
     this.camera.position.copy(this.pos);
     this.camera.lookAt(this.look);

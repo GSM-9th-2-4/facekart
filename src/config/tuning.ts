@@ -53,8 +53,18 @@ export const TUNING = {
     instantBoostTopSpeedMul: 1.12, // top speed multiplier during instant boost
 
     // --- walls ---
-    wallSpeedLoss: 0.4, // fraction of speed lost on wall hit
+    wallSpeedLoss: 0.4, // fraction of speed lost on a head-on hit; scaled by impact² (grazing ≈ 0)
+    wallHeadingNudge: 0.5, // 0..1; on hard hits, heading turns this far toward the slide direction (× impact)
+    wallNudgeMinImpact: 0.3, // impact (0 grazing .. 1 head-on) below which heading is left alone
     radius: 1.1, // m; collision radius passed to the wall hook
+  },
+  stats: {
+    // Kart stats (1–10, karts.json). 5 = Practice Kart = base values above.
+    // Each point away from 5 scales the base value by ±statStepPct.
+    // topSpeed → topSpeed (boost top speed follows), accel → accel,
+    // cornering → steerRate, driftSteerRate, grip, driftGrip; boostCharge → gaugeRate.
+    baseStat: 5,
+    statStepPct: 0.04,
   },
   camera: {
     fov: 70,
@@ -72,5 +82,11 @@ export const TUNING = {
     wheelSpinScale: 2.5, // wheel rotation per metre (≈ 1 / wheel radius)
     steerWheelAngle: 0.4, // rad; front wheel visual steer angle
     flameFlickerHz: 30,
+    flameFlickerMin: 0.8, // flame length scale = min + amp * |sin(t * Hz)|
+    flameFlickerAmp: 0.4,
+    flameScaleBoost: 1.4, // flame size during booster
+    flameScaleInstant: 0.8, // flame size during instant boost
+    flameColorBoost: 0x33aaff,
+    flameColorInstant: 0xff8a00,
   },
 } as const;

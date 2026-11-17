@@ -19,10 +19,10 @@ Owner legend: CC = Claude Code · App = Claude app (browser) · Me = human.
 - [ ] **4. Track generator + 8 tracks** (CC → `track-builder`)
   - Done when: tracks load from `src/data/tracks/*.json` (waypoints + width + theme); road, walls and checkpoints are generated from a closed spline; all 8 tracks from `PLAN.md` §4.2 exist with their features (ice = low grip, puddles = slow zones, ramps, forks, moving floors); start grid positions defined; a dev URL param `?track=<id>` loads a track directly.
 
-- [ ] **5. 10 karts** (CC → `kart-physics`)
+- [x] **5. 10 karts** (CC → `kart-physics`)
   - Done when: `src/data/karts.json` holds the 10 karts from `PLAN.md` §4.1; stats map to physics (Practice Kart = baseline, each stat point = ±4% of base value, tunable in `tuning.ts`); kart color comes from data; `?kart=<id>` dev param works.
 
-- [ ] **6. Face pipeline** (CC → `face-pipeline`)
+- [x] **6. Face pipeline** (CC → `face-pipeline`)
   - Done when: `@mediapipe/tasks-vision` installed; model file fetched by `npm run fetch-models` into `public/models/`; a photo (file or webcam) produces an aligned, masked 256×256 face PNG; it is applied as a decal on a big round head on the kart driver; failure (no face / side face) returns a clear error message.
 
 - [ ] **7. Screens** (CC → `ui-screens`)
@@ -47,3 +47,5 @@ Owner legend: CC = Claude Code · App = Claude app (browser) · Me = human.
 Record any choice made without asking (one line each).
 - 2026-11-17 step 3: Boost also bound to Z by default because macOS uses Ctrl+arrows for Spaces / Mission Control.
 - 2026-11-17: Steps 4, 6, 7 built in parallel with step 3 at the user's request (separate folders); karts.json written from PLAN §4.1 up front so the Garage could use it.
+- 2026-11-17 step 6: Face decal centered on face outline vertically (not eyes–mouth) so chin/forehead are not cut; cartoon tone on by default.
+- 2026-11-17 step 5: Wall hit = slide along wall, speed loss scaled by impact²; dead head-on hit stops the kart (no bounce).

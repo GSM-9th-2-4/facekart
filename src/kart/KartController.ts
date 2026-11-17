@@ -1,12 +1,8 @@
 import { TUNING } from '../config/tuning';
 
 type KartTuning = typeof TUNING.kart;
-/** Per-kart physics numbers. Built from TUNING by makeKartParams(); step 5 scales these by kart stats. */
+/** Per-kart physics numbers. Built from TUNING + kart stats by makeKartParams() in karts.ts. */
 export type KartPhysicsParams = { -readonly [K in keyof KartTuning]: number };
-
-export function makeKartParams(): KartPhysicsParams {
-  return { ...TUNING.kart };
-}
 
 export interface KartControls {
   throttle: number; // -1..1 (negative = brake / reverse)
@@ -170,21 +166,46 @@ export class KartController {
     const from = { x: this.x, z: this.z };
     const to = { x: this.x + this.vx * dt, z: this.z + this.vz * dt };
     const hit = this.walls?.(from, to, p.radius);
-    if (hit) {
-      const vx = this.vx;
-      const vz = this.vz;
-      const dot = vx * hit.normal.x + vz * hit.normal.z;
-      const rx = vx - 2 * dot * hit.normal.x;
-      const rz = vz - 2 * dot * hit.normal.z;
-      this.x = hit.position.x;
-      this.z = hit.position.z;
-      this.travel = Math.atan2(rx, rz);
-      this.speed = Math.hypot(rx, rz) * (1 - p.wallSpeedLoss) * Math.sign(this.speed || 1);
-      if (this.speed < 0) this.travel = wrap(this.travel + Math.PI); // keep signed-speed convention
-      this.isDrifting = false;
-    } else {
+    if (!hit) {
       this.x = to.x;
       this.z = to.z;
+      return;
+    }
+    this.x = hit.position.x;
+    this.z = hit.position.z;
+    this.slideAlong(hit.normal, true);
+    // re-sweep the slide once so a corner can't push us into the other wall
+    const to2 = { x: this.x + this.vx * dt, z: this.z + this.vz * dt };
+    const hit2 = this.walls?.({ x: this.x, z: this.z }, to2, p.radius);
+    if (hit2) {
+      this.x = hit2.position.x;
+      this.z = hit2.position.z;
+      this.slideAlong(hit2.normal, false);
+    } else {
+      this.x = to2.x;
+      this.z = to2.z;
+    }
+  }
+
+  /** Remove the velocity component into the wall; lose speed by impact angle; on hard hits turn heading toward the slide. */
+  private slideAlong(n: { x: number; z: number }, nudge: boolean) {
+    const p = this.params;
+    const vx = this.vx;
+    const vz = this.vz;
+    const v = Math.hypot(vx, vz);
+    const dot = vx * n.x + vz * n.z;
+    if (dot >= 0 || v < 1e-6) return; // already moving away
+    const impact = -dot / v; // 0 grazing .. 1 head-on
+    const keep = 1 - p.wallSpeedLoss * impact * impact; // squared: scraping along a wall costs little, square hits cost a lot
+    const tx = (vx - dot * n.x) * keep;
+    const tz = (vz - dot * n.z) * keep;
+    const t = Math.hypot(tx, tz);
+    const reversing = this.speed < 0;
+    if (t > 1e-6) this.travel = reversing ? Math.atan2(-tx, -tz) : Math.atan2(tx, tz);
+    this.speed = reversing ? -t : t;
+    this.isDrifting = false;
+    if (nudge && !reversing && impact > p.wallNudgeMinImpact && t > 1e-6) {
+      this.heading = wrap(this.heading + wrap(this.travel - this.heading) * p.wallHeadingNudge * impact);
     }
   }
 }

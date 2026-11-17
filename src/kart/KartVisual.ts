@@ -42,7 +42,7 @@ export class KartVisual {
     const flameGeo = mat(new THREE.ConeGeometry(0.25, 1.2, 12));
     flameGeo.rotateX(-Math.PI / 2); // tip points backward (-Z)
     flameGeo.translate(0, 0, -0.6);
-    this.flame = new THREE.Mesh(flameGeo, mat(new THREE.MeshBasicMaterial({ color: 0xff8a00, transparent: true, opacity: 0.85 })));
+    this.flame = new THREE.Mesh(flameGeo, mat(new THREE.MeshBasicMaterial({ color: TUNING.visual.flameColorInstant, transparent: true, opacity: 0.85 })));
     this.flame.position.set(0, 0.45, -1.1);
     this.flame.visible = false;
 
@@ -63,10 +63,10 @@ export class KartVisual {
     const boosting = k.boostTimer > 0 || k.instantBoostTimer > 0;
     this.flame.visible = boosting;
     if (boosting) {
-      const flick = 0.8 + 0.4 * Math.abs(Math.sin(time * v.flameFlickerHz));
-      const big = k.boostTimer > 0 ? 1.4 : 0.8;
+      const flick = v.flameFlickerMin + v.flameFlickerAmp * Math.abs(Math.sin(time * v.flameFlickerHz));
+      const big = k.boostTimer > 0 ? v.flameScaleBoost : v.flameScaleInstant;
       this.flame.scale.set(big, big, big * flick);
-      this.flame.material.color.setHex(k.boostTimer > 0 ? 0x33aaff : 0xff8a00);
+      this.flame.material.color.setHex(k.boostTimer > 0 ? v.flameColorBoost : v.flameColorInstant);
     }
   }
 

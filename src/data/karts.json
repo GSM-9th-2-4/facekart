@@ -1,0 +1,132 @@
+[
+  {
+    "id": "solaris",
+    "name": "Solaris",
+    "tier": "high",
+    "color": "#ffb300",
+    "stats": {
+      "topSpeed": 9,
+      "accel": 8,
+      "cornering": 7,
+      "boostCharge": 7
+    },
+    "notes": "All-rounder"
+  },
+  {
+    "id": "thunder",
+    "name": "Thunder",
+    "tier": "high",
+    "color": "#1e88e5",
+    "stats": {
+      "topSpeed": 10,
+      "accel": 7,
+      "cornering": 6,
+      "boostCharge": 7
+    },
+    "notes": "Best on straights, hard in corners"
+  },
+  {
+    "id": "phantom",
+    "name": "Phantom",
+    "tier": "high",
+    "color": "#6a1b9a",
+    "stats": {
+      "topSpeed": 8,
+      "accel": 8,
+      "cornering": 9,
+      "boostCharge": 8
+    },
+    "notes": "Drift specialist, for skilled players"
+  },
+  {
+    "id": "blaze",
+    "name": "Blaze",
+    "tier": "mid",
+    "color": "#e53935",
+    "stats": {
+      "topSpeed": 7,
+      "accel": 6,
+      "cornering": 6,
+      "boostCharge": 6
+    },
+    "notes": "Speed type"
+  },
+  {
+    "id": "wind",
+    "name": "Wind",
+    "tier": "mid",
+    "color": "#26c6da",
+    "stats": {
+      "topSpeed": 6,
+      "accel": 8,
+      "cornering": 6,
+      "boostCharge": 6
+    },
+    "notes": "Acceleration type, fast recovery after crashes"
+  },
+  {
+    "id": "circle",
+    "name": "Circle",
+    "tier": "mid",
+    "color": "#43a047",
+    "stats": {
+      "topSpeed": 6,
+      "accel": 6,
+      "cornering": 8,
+      "boostCharge": 6
+    },
+    "notes": "Cornering type"
+  },
+  {
+    "id": "charger",
+    "name": "Charger",
+    "tier": "mid",
+    "color": "#fb8c00",
+    "stats": {
+      "topSpeed": 6,
+      "accel": 6,
+      "cornering": 6,
+      "boostCharge": 8
+    },
+    "notes": "Booster-charge type"
+  },
+  {
+    "id": "sprinter",
+    "name": "Sprinter",
+    "tier": "rookie",
+    "color": "#ec407a",
+    "stats": {
+      "topSpeed": 6,
+      "accel": 6,
+      "cornering": 5,
+      "boostCharge": 5
+    },
+    "notes": "Practice kart + speed"
+  },
+  {
+    "id": "drifter",
+    "name": "Drifter",
+    "tier": "rookie",
+    "color": "#8d6e63",
+    "stats": {
+      "topSpeed": 5,
+      "accel": 6,
+      "cornering": 6,
+      "boostCharge": 6
+    },
+    "notes": "Practice kart + drift"
+  },
+  {
+    "id": "practice",
+    "name": "Practice Kart",
+    "tier": "practice",
+    "color": "#9e9e9e",
+    "stats": {
+      "topSpeed": 5,
+      "accel": 5,
+      "cornering": 5,
+      "boostCharge": 5
+    },
+    "notes": "Baseline"
+  }
+]
