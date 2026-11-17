@@ -7,7 +7,7 @@ Owner legend: CC = Claude Code · App = Claude app (browser) · Me = human.
 
 - [x] **0. Plan in repo** (App) — `PLAN.md` exists.
 
-- [ ] **1. Project setup** (CC)
+- [x] **1. Project setup** (CC)
   - Done when: Vite + TS strict + Three.js project runs with `npm run dev`; a box kart sits on a large plane with lighting; `npm run build` passes; folder layout from `CLAUDE.md` exists; `src/config/tuning.ts` exists.
 
 - [ ] **2. Free assets** (App — runs in parallel, not blocking)
