@@ -1,6 +1,8 @@
 import { AI_TUNING } from '../config/aiTuning';
 import { KartController, makeKartParams, type KartControls, type KartDef, type Surface, type WallCollider } from '../kart';
 import { AiDriver } from '../ai/AiDriver';
+// dev: ?autodrive lets the AI drive the player kart (smoke-testing full races)
+const DEV_AUTODRIVE = new URLSearchParams(location.search).has("autodrive");
 import type { LinePath, P2 } from '../ai/LinePath';
 
 const R = AI_TUNING.race;
@@ -132,7 +134,7 @@ export class Race {
       let c: KartControls;
       if (r.ai) c = r.ai.update(dt, r.ctrl, this.time);
       else c = playerControls;
-      if (r.finishTime !== null && r.isPlayer) c = this.autopilot(r, dt);
+      if (r.isPlayer && (r.finishTime !== null || DEV_AUTODRIVE)) c = this.autopilot(r, dt);
       if (r.ai && RB.enabled && r.finishTime === null) {
         const gap = r.raceDist - this.player.raceDist; // + = AI ahead of the player
         r.ctrl.params.topSpeed = r.baseTopSpeed * (1 - Math.max(-1, Math.min(1, gap / RB.range)) * RB.maxTopSpeedMul);

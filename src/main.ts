@@ -70,6 +70,8 @@ function teardown() {
 
 // browsers only allow audio after a user gesture
 for (const ev of ['pointerdown', 'keydown'] as const) window.addEventListener(ev, () => audio.unlock()); // not once: Esc isn't a valid gesture; unlock() is idempotent
+// UI click sound for every overlay button (mouse or Enter both fire 'click')
+uiRoot.addEventListener('click', (e) => { if ((e.target as HTMLElement).closest('button')) audio.play('click'); });
 
 const nextFrame = () => new Promise<void>((r) => requestAnimationFrame(() => r()));
 
@@ -130,7 +132,8 @@ const ui = createUi({
 // Dev: ?track=<id> skips the menus (with ?kart=<id>); otherwise start at the title screen.
 const devTrack = getTrackIdFromUrl();
 if (devTrack) {
-  const kartParam = new URLSearchParams(location.search).get('kart');
+  const q = new URLSearchParams(location.search);
+  const kartParam = q.get("kart");
   if (kartParam && !getKart(kartParam)) console.warn(`Unknown kart "${kartParam}", using the selected kart`);
   const kart = getKart(kartParam ?? '') ?? getKart(storage.getSelectedKartId() ?? '') ?? getKart(DEFAULT_KART_ID)!;
   const prefs = storage.getRaceSetup();
@@ -138,7 +141,7 @@ if (devTrack) {
   const mode = storage.getMode();
   void startRace({
     trackId: devTrack,
-    laps: listTracks().find((t) => t.id === devTrack)?.laps ?? prefs.laps,
+    laps: Number(q.get("laps")) || (listTracks().find((t) => t.id === devTrack)?.laps ?? prefs.laps), // dev: ?laps=N
     aiCount: mode === 'time' ? 0 : prefs.aiCount,
     mode,
     kartId: kart.id,

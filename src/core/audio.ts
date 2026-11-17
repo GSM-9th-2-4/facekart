@@ -127,11 +127,13 @@ const RECIPES: Record<SfxName, (c: Ctx, out: AudioNode, t: number, v: number) =>
 // --- looping voices ---
 class Engine {
   private osc: OscillatorNode[] = [];
+  private wanted = false;
   private gain: GainNode | null = null;
 
   start() {
-    const c = getCtx();
-    if (!c || !master || this.gain) return;
+    this.wanted = true;
+    const c = ctx; // never create before a user gesture (Chrome autoplay warning); update() retries once unlocked
+    if (!c || c.state !== "running" || !master || this.gain) return;
     try {
       this.gain = c.createGain();
       this.gain.gain.value = 0;
@@ -154,6 +156,7 @@ class Engine {
   }
 
   update(speedNorm: number, throttle: number) {
+    if (this.wanted && !this.gain) this.start();
     if (!ctx || !this.gain) return;
     const s = Math.max(0, Math.min(1.5, speedNorm));
     const hz = T.engine.idleHz + (T.engine.topHz - T.engine.idleHz) * s;
@@ -164,6 +167,7 @@ class Engine {
   }
 
   stop() {
+    this.wanted = false;
     for (const o of this.osc) {
       try {
         o.stop();

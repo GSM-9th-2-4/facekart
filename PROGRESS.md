@@ -31,7 +31,7 @@ Owner legend: CC = Claude Code · App = Claude app (browser) · Me = human.
 - [x] **8. AI + race flow** (CC → `race-ai`)
   - Done when: 3-2-1 countdown; up to 7 AI karts follow the racing line with stats from `karts.json` and use boosters; lap counting via checkpoints (no shortcut cheating), live positions, lap times, best-time records per track; 1st-place face close-up on Results; AI karts can wear saved faces.
 
-- [ ] **9. Polish** (CC)
+- [x] **9. Polish** (CC)
   - Done when: assets from `public/assets/` replace primitives where available; sound effects (engine, drift, boost, countdown); boost / drift particles; no console errors in a full race on every track.
 
 - [ ] **10. Final QA** (App + Me)
@@ -52,3 +52,4 @@ Record any choice made without asking (one line each).
 - 2026-11-17 step 4: ?track=<id> works in /track-preview.html now; main game wiring lands with step 8. AI drives main line only (forks optional for player). City shortcut skips ~370 m by design.
 - 2026-11-17 step 7: Storage prefix facekart:v1:; UI owns the pause key; Item mode greyed out (stretch); Time attack forces 0 AI; max 8 saved faces.
 - 2026-11-17 step 8: Player starts mid-grid; AI pace (paceMin) + ±5% rubber band; total-time record only saved at the track's default lap count; Results winner close-up is the 2D face image (no 3D camera). Sim showed top-speed stat dominates AI order — revisit with statStepPct / aiTuning after test drives.
+- 2026-11-17 step 9: public/assets/ empty → primitives kept; procedural Web Audio SFX (auto-replaced by public/assets/sfx/<name>.ogg|mp3|wav if added). Verified in headless Chrome: 1-lap full race to Results + Retry/Lobby on all 8 tracks, zero console errors/warnings. Added dev params ?laps=N and ?autodrive (AI drives player).
